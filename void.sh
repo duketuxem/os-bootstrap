@@ -44,11 +44,11 @@ display="xorg libX11-devel libXft-devel libXinerama-devel"
 fonts="nerd-fonts-otf noto-fonts-cjk"
 shell="zsh zsh-syntax-highlighting fd fzf tmux vim"
 # my forked suckless tool suite repositories
-suckless_tools_path="$USER/projets/ricing/"
+suckless_tools_path="$HOME/projets/ricing/"
 
 # 1.
 info "Installing the user packages..."
-sudo xbps-install -y "$sys_utils $display $fonts $shell" \
+sudo xbps-install -y "$sys_utils" "$display" "$fonts" "$shell" \
 && success "Package requirements satisfied!\n"
 
 # 2.
