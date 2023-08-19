@@ -48,7 +48,13 @@ suckless_tools_path="$HOME/projets/ricing/"
 
 # 1.
 info "Installing the user packages..."
-sudo xbps-install -y "$sys_utils" "$display" "$fonts" "$shell" \
+# if the double quotes remain, it is going to be interpreted as a package
+# with a space, which does not exist in void repositories.
+# Solutions are :
+# - Remove quotes
+# - Use array (Bash/Zsh/Ksh) or POSIX shenanigans...
+# - Eval on the strings
+sudo xbps-install -y $sys_utils $display $fonts $shell \
 && success "Package requirements satisfied!\n"
 
 # 2.
