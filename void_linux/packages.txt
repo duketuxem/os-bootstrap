@@ -1,0 +1,14 @@
+# vim:ft=sh
+
+# system utils
+base-devel curl htop
+
+# desktop display
+xorg libX11-devel libXft-devel libXinerama-devel
+
+# fonts
+nerd-fonts-otf noto-fonts-cjk
+
+# shell & shell utils
+zsh zsh-syntax-highlighting fd fzf tmux vim tree
+

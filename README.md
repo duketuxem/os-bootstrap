@@ -24,3 +24,40 @@ The user is logged on the system, and the machine has access to the internet.
 4. `$> git clone https://github.com/duketuxem/os-bootstrap.git`
 5. Change directory to the cloned repository and corresponding platform
 6. Run the script
+
+
+TODO markdown table ?
+
+# Software list
+To give an idea of what is going to be installed.
+
+### System utilities
+- building tools (make, ...)
+- htop
+- curl / wget
+- jq...
+
+### Fonts
+- Nerd fonts (for the terminal)
+- noto-fonts-cjk (for asian languages support)
+- cyrillic
+
+### Basic user needs
+- xorg
+- dwm - depending on:
+  - libX11
+  - libXft
+  - libXinerama
+- st - depending on:
+    - libX11
+    - libXft
+- dmenu - depending on:
+    - libX11
+    - libXft
+    - libXinerama
+- zsh
+    - zsh-syntax-highlighting
+- tmux
+- vim
+- fzf
+  - fd (find replacement)
