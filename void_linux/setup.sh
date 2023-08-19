@@ -10,11 +10,11 @@ actual_directory="$(pwd)"
 
 
 info "Creating the home folder structure..."
-create_home_folder_structure
+create_home_folder_structure && success "OK!"
 
 
 info "Installing the user packages..."
-sudo xbps-install -y $(grep -v '^#' ./packages.txt | tr -d '\n') \
+sudo xbps-install -y $(grep -v '^#' ./packages.txt | tr '\n' ' ') \
 && success "Package requirements satisfied!\n"
 
 
