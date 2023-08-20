@@ -19,17 +19,17 @@ call sudo xbps-install -y $(grep -v '^#' ./packages.txt | tr '\n' ' ') \
 info "Installing the suckless tool suite..."
 cd "$ricing_project_directory"
 for soft in dmenu dwm st; do
-	call git clone https://github.com/DukeTuxem/$soft.git -b my_fork \
+	call git clone https://github.com/duketuxem/$soft.git -b my_fork \
 	&& cd $soft && call sudo make install 2>&1 > /dev/null && cd .. \
 	&& success "$soft successfully installed!\n"
 done
 
 
 info "Setting up all the dotfiles..."
-call git clone https://github.com/DukeTuxem/dotfiles.git -b setup
+call git clone https://github.com/duketuxem/dotfiles.git -b setup
 call cp -r "./dotfiles/.config" "$HOME"
 call cp -r "./dotfiles/.local" "$HOME"
-call git clone --bare https://github.com/DukeTuxem/dotfiles .dotfiles
+call git clone --bare https://github.com/duketuxem/dotfiles .dotfiles
 
 
 info "Override the default Zsh configuration location to match ours"
