@@ -11,8 +11,13 @@ create_home_folder_structure()
 	mkdir "$HOME/pictures"
 
 	# XDG spec directories
-	mkdir -p "$HOME/.local/bin"
 	mkdir "$HOME/.config"
+
+	mkdir -p "$HOME/.local/bin"
+	mkdir "$HOME/.local/cache"
+	mkdir "$HOME/.local/log"
+	mkdir "$HOME/.local/share"
+	mkdir "$HOME/.local/state"
 
 	# newline
 	info
