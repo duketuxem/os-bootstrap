@@ -19,11 +19,12 @@ cd "$ricing_project_directory"
 info "Installing the suckless tool suite..."
 for soft in dmenu dwm st; do
 	call git clone https://github.com/duketuxem/$soft.git -b my_fork \
-		&& cd $soft && call sudo make install > /dev/null 2>&1 \
-		&& success "$soft successfully installed!\n"
-
-	call git remote set-url origin git@github.com:duketuxem/$soft.git \
-		&& success "Repository set to use SSH."
+		&& cd $soft \
+		&& call sudo make install > /dev/null 2>&1 \
+		&& success "$soft successfully installed!\n" \
+		&& git remote set-url origin git@github.com:duketuxem/$soft.git \
+		&& success "Repository set to use SSH." \
+		&& cd ..
 done
 
 info "Setting up all the dotfiles..."
