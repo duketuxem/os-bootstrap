@@ -18,19 +18,18 @@ the core system installation is done.
 # How to use
 The user is logged on the system, and the machine has access to the internet.
 
-1. Update the system
-2. Install Git
-3. Create the path contained in the variable `$ricing_project_directory`
-from the `config.sh` file
-4. Change directory to that created folder
+1. Update the system.
+2. Install Git.
+3. Create the path specified in the variable `$ricing_project_directory`
+in the `config.sh` file.
+4. Change the directory to that newly created folder.
 5. Clone this repository:
 `$> git clone https://github.com/duketuxem/os-bootstrap.git`
-6. Change directory to the concerned platform
-7. Run the `setup.sh` script in that folder
+6. Navigate to the relevant platform folder.
+7. Run the `setup.sh` script in that folder.
+
 %% 8. Refer to https://github.com/DukeTuxem/dotfiles for the associated configuration
 
-
-TODO markdown table ?
 
 # Software list
 To give an idea of what is going to be installed.
