@@ -10,5 +10,7 @@ xorg libX11-devel libXft-devel libXinerama-devel
 nerd-fonts-otf noto-fonts-cjk
 
 # shell & shell utils
-zsh zsh-syntax-highlighting fd fzf tmux vim tree
+zsh zsh-syntax-highlighting tmux
 
+# CLI tool suite
+vim tree fd fzf

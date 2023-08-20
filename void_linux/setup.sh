@@ -6,7 +6,7 @@ set -eu
 
 . ./env.sh		# distro specifics
 
-actual_directory="$(pwd)"
+distro_directory="$(pwd)"
 
 
 info "Creating the home folder structure..."
@@ -19,12 +19,11 @@ sudo xbps-install -y $(grep -v '^#' ./packages.txt | tr '\n' ' ') \
 
 
 info "Installing the suckless tool suite..."
-cd "$suckless_tools_location"
+cd "$ricing_project_directory"
 for soft in dmenu dwm st; do
 	git clone https://github.com/DukeTuxem/$soft.git -b my_fork \
 	&& cd $soft && sudo make install && cd .. \
 	&& success "$soft successfully installed!\n" \
 	|| error "$soft install failed for some reason :(\n"
 done
-
-cd "$actual_directory"
+cd "$distro_directory"

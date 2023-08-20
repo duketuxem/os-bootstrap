@@ -1,39 +1,21 @@
 #!/usr/bin/env sh
 
-suckless_tools_location="$HOME/dev/suckless"
+ricing_project_directory="$HOME/develop/ricing"
 
 create_home_folder_structure()
 {
-	# ~
-	# ├── .dotfiles/
-	# ├── bin/
-	# ├── dev/
-	#     └── suckless/
-	#         ├── dmenu/
-	#         ├── dwm/
-	#         └── st/
-	# ├── music/
-	# ├── pictures/
-	# │   └── wallpaper.img
-	# └── projects/
-	#     ├── another_project/
-	#     └── ricing/
-	#         ├── dotfiles/ -> /home/remi/home/.dotfiles
-	#         ├── os-bootstrap/
+	# the lab
+	mkdir -p "$ricing_project_directory"
 
 	# top level directories
-	mkdir "$HOME"/music
-	mkdir "$HOME"/pictures
-	mkdir "$HOME"/movies
+	mkdir "$HOME/music"
+	mkdir "$HOME/movies"
+	mkdir "$HOME/pictures"
 
-	# the lab
-	mkdir "$HOME"/dev
-	mkdir "$HOME"/dev/suckless
-	mkdir "$HOME"/dev/suckless/dmenu
-	mkdir "$HOME"/dev/suckless/dwm
-	mkdir "$HOME"/dev/suckless/st
-
+	mkdir -p "$HOME/.local/bin"
+	mkdir "$HOME/.config"
 }
+
 ###
 # Utils
 ###
