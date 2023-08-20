@@ -23,4 +23,18 @@ for soft in dmenu dwm st; do
 	&& cd $soft && call sudo make install 2>&1 > /dev/null && cd .. \
 	&& success "$soft successfully installed!\n"
 done
-cd "$distro_directory"
+
+
+info "Setting up all the dotfiles..."
+call git clone https://github.com/DukeTuxem/dotfiles.git -b setup
+call cp -r "./dotfiles/.config" "$HOME"
+call cp -r "./dotfiles/.local" "$HOME"
+call git clone --bare https://github.com/DukeTuxem/dotfiles .dotfiles
+
+
+info "Override the default Zsh configuration location to match ours"
+call sudo sh -c 'printf "export ZDOTDIR=\"\$HOME\"/.config/zsh\n" > /etc/zsh/zshenv'
+
+
+info "Changing to Zsh"
+call chsh -s /bin/zsh

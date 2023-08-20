@@ -6,13 +6,16 @@ ricing_project_directory="$HOME/develop/ricing"
 create_home_folder_structure()
 {
 	# top level directories
-	step mkdir "$HOME/music"
-	step mkdir "$HOME/movies"
-	step mkdir "$HOME/pictures"
+	mkdir "$HOME/music"
+	mkdir "$HOME/movies"
+	mkdir "$HOME/pictures"
 
 	# XDG spec directories
-	step mkdir -p "$HOME/.local/bin"
-	step mkdir "$HOME/.config"
+	mkdir -p "$HOME/.local/bin"
+	mkdir "$HOME/.config"
+
+	# newline
+	info
 }
 
 ###

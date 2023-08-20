@@ -1,6 +1,6 @@
 # About os-bootstrap
 Every time I finish installing a new distribution on a machine,
-everything feels like something is missing.
+obvioulsy nothing I want is there...
 Having to reinstall the same software suite repeatedly is frustrating,
 and managing the corresponding configuration for
 those applications is even worse.
