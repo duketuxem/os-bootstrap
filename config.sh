@@ -1,19 +1,18 @@
 #!/usr/bin/env sh
 
+# this must exists _before_ running the distro script
 ricing_project_directory="$HOME/develop/ricing"
 
 create_home_folder_structure()
 {
-	# the lab
-	mkdir -p "$ricing_project_directory"
-
 	# top level directories
-	mkdir "$HOME/music"
-	mkdir "$HOME/movies"
-	mkdir "$HOME/pictures"
+	step mkdir "$HOME/music"
+	step mkdir "$HOME/movies"
+	step mkdir "$HOME/pictures"
 
-	mkdir -p "$HOME/.local/bin"
-	mkdir "$HOME/.config"
+	# XDG spec directories
+	step mkdir -p "$HOME/.local/bin"
+	step mkdir "$HOME/.config"
 }
 
 ###
@@ -21,7 +20,6 @@ create_home_folder_structure()
 ###
 error() {
     printf "\033[0;1;31m$*\033[0m\n"
-    exit
 }
 
 success() {
