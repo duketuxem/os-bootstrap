@@ -1,0 +1,16 @@
+# display
+xorg
+
+# fonts
+nerd-fonts-otf noto-fonts-cjk
+
+# big apps
+firefox chromium keepassxc
+
+# office
+libreoffice
+
+# multimedia
+feh mpv mupdf
+
+# vim: syn=sh

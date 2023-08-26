@@ -1,60 +1,12 @@
-#!/usr/bin/env sh
+# No shebang needed since this script is sourced, not meant to be executed
 
-# this must exists _before_ running the distro script
+# ! this must exists _before_ running the distro script !
 ricing_project_directory="$HOME/develop/ricing"
 
-create_home_folder_structure()
-{
-	# top level directories
-	mkdir "$HOME/music"
-	mkdir "$HOME/movies"
-	mkdir "$HOME/pictures"
+# for changing directory to the cloned folder name
+dotfiles_repo_name="dotfiles"
+dotfiles_repo_url_http="https://github.com/duketuxem/dotfiles.git"
+dotfiles_repo_url_ssh="git@github.com/duketuxem/dotfiles.git"
+dotfiles_repo_branch="setup"
 
-	# XDG spec directories
-	mkdir "$HOME/.config"
-
-	mkdir -p "$HOME/.local/bin"
-	mkdir "$HOME/.local/cache"
-	mkdir "$HOME/.local/log"
-	mkdir "$HOME/.local/share"
-	mkdir "$HOME/.local/state"
-
-	# newline
-	info
-}
-
-###
-# Utils
-###
-error() {
-    printf "\033[0;1;31m$*\033[0m\n"
-}
-
-success() {
-    printf "\033[0;1;32m$*\033[0m\n"
-}
-
-warning() {
-    printf "\033[0;1;33m$*\033[0m\n"
-}
-
-info() {
-    printf "\033[0;1;34m$*\033[0m\n"
-}
-
-step() {
-    printf "\033[0;1;35m$*\033[0m\n"
-}
-
-call() {
-    info "$*"
-
-    "$@"
-    ret=$?
-    if [ $ret -ne 0 ]
-    then
-        error "$*\nreturned: $ret"
-        exit $ret
-    fi
-}
-
+login_shell="/usr/bin/zsh"

@@ -1,16 +1,15 @@
 # vim:ft=sh
 
 # system utils
-base-devel curl htop
+base-devel htop curl wget
 
-# desktop display
-xorg libX11-devel libXft-devel libXinerama-devel
-
-# fonts
-nerd-fonts-otf noto-fonts-cjk
+# network
 
 # shell & shell utils
 zsh zsh-syntax-highlighting tmux
 
-# CLI tool suite
-vim tree fd fzf
+# editor
+vim ctags
+
+# CLI power
+tree fd fzf bat feh #lf|nnn
