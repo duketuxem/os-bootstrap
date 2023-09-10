@@ -143,7 +143,7 @@ install_packages()
 	core_packages=$(grep -v '^#' "./$platform_folder/core.txt" | tr -s '\n' ' ')
 	install_command="$privilege_escalation $package_manager $core_packages"
 	printf "Running: $install_command\n"
-	ask "Proceed ? [Y/n]"
+	ask "Proceed ?"
 	[ $? -eq 1 ] && return
 	eval "$install_command"
 
@@ -157,7 +157,7 @@ install_packages()
 	gui_packages=$(grep -v '^#' "./$platform_folder/gui.txt" | tr -s '\n' ' ')
 	install_command="$privilege_escalation $package_manager $gui_packages"
 	printf "Running: $install_command\n"
-	ask "Proceed ? [Y/n]"
+	ask "Proceed ?"
 	[ $? -eq 1 ] && return
 	eval "$install_command"
 
@@ -166,9 +166,13 @@ install_packages()
 	cd "$ricing_project_directory"
 	for soft in dmenu dwm st
    	do
+		if has $soft; then
+			info "$soft is already installed"
+			continue
+		fi
 		call git clone https://github.com/duketuxem/"$soft".git -b my_fork \
 			&& cd $soft \
-			&& call "$privilege_escalation" make install > /dev/null 2>&1 \
+			&& call "$privilege_escalation" make install \
 			&& success "$soft successfully installed!\n" \
 			&& git remote set-url origin git@github.com:duketuxem/$soft.git \
 			&& success "Repository set to use SSH." \
