@@ -189,7 +189,14 @@ install_dotfiles()
 	# Clone the repository sources using the right branch.
 	call git clone "$dotfiles_repo_url_http" -b "$dotfiles_repo_branch"
 	# 'deploy' the configuration TODO: Use `rsync` here ?
-	call cp -r "./$dotfiles_repo_name/*" "$HOME"
+	call ls
+	call ls "."
+	call ls "$dotfiles_repo_name"
+	call ls "./$dotfiles_repo_name"
+
+	call cp -r "./$dotfiles_repo_name/.config"	\
+		"./$dotfiles_repo_name/.local"			\
+		"$HOME"
 	# Setup the dotfiles workflow using git bare repositories
 	call git clone --bare "$dotfiles_repo_url_http" "$HOME/.dotfiles"
 	# As with all my repositories, set it to use ssh.
