@@ -40,7 +40,6 @@ call()
     then
         error "$*\nreturned: $ret"
 		error "Being in: $(pwd)"
-		error "Listing: $(ls)"
         exit $ret
     fi
 }
@@ -189,11 +188,6 @@ install_dotfiles()
 	# Clone the repository sources using the right branch.
 	call git clone "$dotfiles_repo_url_http" -b "$dotfiles_repo_branch"
 	# 'deploy' the configuration TODO: Use `rsync` here ?
-	call ls
-	call ls "."
-	call ls "$dotfiles_repo_name"
-	call ls "./$dotfiles_repo_name"
-
 	call cp -r "./$dotfiles_repo_name/.config"	\
 		"./$dotfiles_repo_name/.local"			\
 		"$HOME"
