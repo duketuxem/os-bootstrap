@@ -139,7 +139,7 @@ using configuration files at the home root folder
 # How to use
 The user is logged on the system, and the machine has access to the internet.
 
-1. Update the system.
+1. Update the system, and reboot eventually.
 2. Install `git` and `doas`.
 3. Create the path specified in the variable `$ricing_project_directory`
 in the `config.sh` file.

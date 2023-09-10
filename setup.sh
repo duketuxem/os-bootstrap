@@ -101,13 +101,15 @@ which_linux()
 	[ $? -eq 1 ] && exit 1
 }
 
-create_project_directory()
+check_requirements()
 {
-	mkdir "$ricing_project_directory" 2> /dev/null
+	# Is the folder for hosting the repositories existing ?
+	mkdir -p "$ricing_project_directory" 2> /dev/null
 	[ $? -ne 0 ] \
 		&& error "The project folder does not exist and can not be created" \
 		&& exit 1
-	cd "$ricing_project_directory"
+
+	# TODO: Are the package names only alphanum chars ?
 }
 
 create_home_folder_structure()
@@ -141,6 +143,9 @@ install_packages()
 	core_packages=$(grep -v '^#' "./$platform_folder/core.txt" | tr -s '\n' ' ')
 	install_command="$privilege_escalation $package_manager $core_packages"
 	printf "Running: $install_command\n"
+	ask "Proceed ? [Y/n]"
+	[ $? -eq 1 ] && return
+	eval "$install_command"
 
 	# Install the desktop profile if the user wants it.
 	ask "Do you want to install the desktop profile to have a GUI ?"
@@ -152,9 +157,13 @@ install_packages()
 	gui_packages=$(grep -v '^#' "./$platform_folder/gui.txt" | tr -s '\n' ' ')
 	install_command="$privilege_escalation $package_manager $gui_packages"
 	printf "Running: $install_command\n"
+	ask "Proceed ? [Y/n]"
+	[ $? -eq 1 ] && return
+	eval "$install_command"
 
 	# TODO Make this not hardcoded...
 	step "Installing the custom desktop suite (suckless)..."
+	cd "$ricing_project_directory"
 	for soft in dmenu dwm st
    	do
 		call git clone https://github.com/duketuxem/"$soft".git -b my_fork \
@@ -194,7 +203,6 @@ change_default_shell() {
 
 # =============================================================================
 
-
 step "Detecting platform"
 operating_system="$(uname -s)"
 
@@ -206,8 +214,8 @@ then
 	package_manager='NONE'
 	which_linux							# related : os dectection
 
-	step "Changing directory to the project folder"
-	create_project_directory
+	step "Checking requirements"
+	check_requirements
 
 	# related : directory spec
 	step "Creating the expected home folder structure if not present"
