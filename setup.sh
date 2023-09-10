@@ -110,6 +110,9 @@ check_requirements()
 		&& error "The project folder does not exist and can not be created" \
 		&& exit 1
 
+	# TODO: Does the working directory == root of the repository ?
+	# ls == expected files
+
 	# TODO: Are the package names only alphanum chars ?
 }
 
@@ -161,6 +164,9 @@ install_packages()
 	ask "Proceed ?"
 	[ $? -eq 1 ] && return
 	eval "$install_command"
+	[ $? -ne 0 ] \
+		&& error "Something failed during the packages installation." \
+		&& exit 1
 
 	# TODO Make this not hardcoded...
 	step "Installing the custom desktop suite (suckless)..."
@@ -193,7 +199,7 @@ install_dotfiles()
 		"$HOME"
 	# Setup the dotfiles workflow using git bare repositories
 	call git clone --bare "$dotfiles_repo_url_http" "$HOME/.dotfiles"
-	# As with all my repositories, set it to use ssh.
+	# As with all my repositories, set it to use ssh. TODO: Fix
 	call git --git-dir="$HOME/.dotfiles" \
 		remote set-url origin "$dotfiles_repo_ssh"
 }
@@ -245,6 +251,8 @@ then
 
 	step "Setting up the default shell"
 	change_default_shell
+
+	# TODO: change this repository git remote method
 
 	success "The script has finished the install. Enjoy."
 else
