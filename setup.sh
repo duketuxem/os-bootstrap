@@ -182,6 +182,8 @@ install_packages()
 
 install_dotfiles()
 {
+	# In case the GUI profile is not installed, we're still in the repo.
+	cd "$ricing_project_directory"
 	# Clone the repository sources using the right branch.
 	call git clone "$dotfiles_repo_url_http" -b "$dotfiles_repo_branch"
 	# 'deploy' the configuration TODO: Use `rsync` here ?
