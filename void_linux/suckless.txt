@@ -1,4 +1,0 @@
-# suckless tool suite dependencies
-libX11-devel libXft-devel libXinerama-devel
-
-# vim: syn=sh

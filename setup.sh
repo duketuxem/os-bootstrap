@@ -2,34 +2,36 @@
 
 . ./config.sh
 
-# operating_system='NONE'
-linux_distribution='NONE'
-package_manager='NONE'
-
 ###
 # Utils
 ###
-error() {
+error()
+{
     printf "\033[0;1;31m$*\033[0m\n"
 }
 
-success() {
+success()
+{
     printf "\033[0;1;32m$*\033[0m\n"
 }
 
-warning() {
+warning()
+{
     printf "\033[0;1;33m$*\033[0m\n"
 }
 
-info() {
+info()
+{
     printf "\033[0;1;34m$*\033[0m\n"
 }
 
-step() {
+step()
+{
     printf "\033[0;1;35m$*\033[0m\n"
 }
 
-call() {
+call()
+{
     info "$*"
 
     "$@"
@@ -41,9 +43,19 @@ call() {
     fi
 }
 
+# The following is taken from: https://github.com/dylanaraps/pfetch
+# This is just a simple wrapper around 'command -v' to avoid
+# spamming '>/dev/null' throughout this function. This also guards
+# against aliases and functions.
+has()
+{
+    _cmd=$(command -v "$1") 2>/dev/null || return 1
+    [ -x "$_cmd" ] || return 1
+}
+
 ask()
 {
-	printf " %s [Y/n] " "$1"
+	printf "%s [Y/n] " "$1"
 	read -r answer
 	if [ -z "$answer" ] || [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
 		return 0
@@ -52,47 +64,25 @@ ask()
 	fi
 }
 
-platform_detection()
-{
-	step "Trying to guess about the platform..."
-
-	kernel_name="$(uname -s)"
-
-	if [ "$kernel_name" = "Darwin" ]; then
-		# operating_system="Darwin"
-		error "OS Darwin is unsupported"
-		exit 1
-	elif [ "$kernel_name" = "Windows" ]; then
-		# operating_system="Windows"
-		error "OS Windows is unsupported"
-		exit 1
-	elif [ "$kernel_name" = "FreeBSD" ]; then
-		error "OS BSD and alike are not supported yet"
-		exit 1
-	elif [ "$kernel_name" = "Linux" ]; then
-		printf "OS Linux detected\n"
-		if [ ! -f /etc/os-release ]; then
-			error "No /etc/os-release file found, can not determine distro."
-			exit 1
-		fi
-		which_linux
-	fi
-}
-
-# use sudo or doas ?
-has_doas()
-{
-}
-
 which_linux()
 {
-	os_release=$(cat /etc/os-release)
+	if has lsb_release; then
+		distro=$(lsb_release -sd)
+	else
+		# try with if [ ! -f /etc/os-release ]; then
+		error "No lsb_release command available"
+		exit 1
+	fi
 
-	# Test: OK
-	printf "$os_release" | grep -q 'void'		\
-		&& printf "Void Linux detected\n"		\
-		&& linux_distribution='void_linux'		\
-		&& package_manager="xbps-install -y"
+	if [ "$distro" = '"Void Linux"' ]; then
+		platform_folder='void_linux'
+		package_manager='xbps-install -y'
+		privilege_escalation='sudo'
+	else
+		error "Unhandled flavor for the moment..."
+		exit 1
+	fi
+
 
 	# printf "$os_release" | grep -q 'arch' \
 	# 	&& package_manager="pacman -S"
@@ -106,53 +96,70 @@ which_linux()
 	# printf "$os_release" | grep -q 'gentoo' \
 	# 	&& package_manager="emerge "
 
-	if [ "$os_release" = "NONE" ]; then
-		error 'Unhandled Linux(?) platform'
-		exit 1
-	fi
 	printf "Package manager command should be '%s'\n" "$package_manager"
-
 	ask "Is that correct ?"
 	[ $? -eq 1 ] && exit 1
 }
 
+create_project_directory()
+{
+	mkdir "$ricing_project_directory" 2> /dev/null
+	[ $? -ne 0 ] \
+		&& error "The project folder does not exist and can not be created" \
+		&& exit 1
+	cd "$ricing_project_directory"
+}
+
 create_home_folder_structure()
 {
-	# ask "Do you want to create the home folder structure ?"
-	# [ $? -eq 1 ] && return
-
-	step "Creating the home folder structure..."
-	# top level directories
-	mkdir "$HOME/music"
-	mkdir "$HOME/movies"
-	mkdir "$HOME/pictures"
-
-	# XDG spec directories
-	mkdir "$HOME/.config"
-	mkdir "$HOME/.local"
-	mkdir "$HOME/.local/cache"
-	mkdir "$HOME/.local/share"
-	mkdir "$HOME/.local/state"
-
-	# custom
-	mkdir "$HOME/.local/bin"
-	mkdir "$HOME/.local/log"
+	# Those folders are expected by my dotfiles before they are deployed.
+	# I try to maintain a clean home as much as possible by using the
+	# environment variables relative to the XDG Base Directory specification.
+	#
+	# The 'bin/' and 'log/' directories are conceptually extending the previous
+	# concept a bit more, storing scripts and desktop related software logs to
+	# one specific place.
+	mkdir "$HOME/.config"			\
+			"$HOME/.local"			\
+			"$HOME/.local/cache"	\
+			"$HOME/.local/share"	\
+			"$HOME/.local/state"	\
+									\
+			"$HOME/.local/bin"		\
+			"$HOME/.local/log"		2> /dev/null
 }
 
-install_void_packages() {
-	call sudo "$package_manager" $(grep -v '^#' ./packages.txt | tr '\n' ' ') \
-		&& success "Package requirements satisfied!\n"
-}
+# optimization: detect if any package is missing before running the
+# package manager command
+install_packages()
+{
+	# Install the core packages.
+	if [ ! -f ./"$platform_folder"/core.txt ]; then
+		error "Can not find the $platform_folder/core.txt file."
+		exit 1
+	fi
+	core_packages=$(grep -v '^#' "./$platform_folder/core.txt" | tr -s '\n' ' ')
+	install_command="$privilege_escalation $package_manager $core_packages"
+	printf "Running: $install_command\n"
 
-install_suckless_suite() {
-	info "Installing the suckless tool suite..."
+	# Install the desktop profile if the user wants it.
+	ask "Do you want to install the desktop profile to have a GUI ?"
+	[ $? -eq 1 ] && return
+	if [ ! -f ./"$platform_folder"/gui.txt ]; then
+		error "Can not find the $platform_folder/gui.txt file."
+		exit 1
+	fi
+	gui_packages=$(grep -v '^#' "./$platform_folder/gui.txt" | tr -s '\n' ' ')
+	install_command="$privilege_escalation $package_manager $gui_packages"
+	printf "Running: $install_command\n"
 
-	cd "$ricing_project_directory"
+	# TODO Make this not hardcoded...
+	step "Installing the custom desktop suite (suckless)..."
 	for soft in dmenu dwm st
    	do
 		call git clone https://github.com/duketuxem/"$soft".git -b my_fork \
 			&& cd $soft \
-			&& call sudo make install > /dev/null 2>&1 \
+			&& call "$privilege_escalation" make install > /dev/null 2>&1 \
 			&& success "$soft successfully installed!\n" \
 			&& git remote set-url origin git@github.com:duketuxem/$soft.git \
 			&& success "Repository set to use SSH." \
@@ -160,14 +167,23 @@ install_suckless_suite() {
 	done
 }
 
-install_dotfiles() {
-	info "Setting up all the dotfiles..."
-
-	call git clone "$dotfiles_repo_url" -b "$setup"
+install_dotfiles()
+{
+	# Clone the repository sources using the right branch.
+	call git clone "$dotfiles_repo_url_http" -b "$dotfiles_repo_branch"
+	# 'deploy' the configuration TODO: Use `rsync` here ?
 	call cp -r "./$dotfiles_repo_name/*" "$HOME"
-	call git clone --bare "$dotfiles_repo_url" "$HOME/.dotfiles"
-	call git --git-dir="$HOME/.dotfiles" remote set-url origin "$dotfiles_repo_ssh"
-	git@github.com:duketuxem/$soft.git
+	# Setup the dotfiles workflow using git bare repositories
+	call git clone --bare "$dotfiles_repo_url_http" "$HOME/.dotfiles"
+	# As with all my repositories, set it to use ssh.
+	call git --git-dir="$HOME/.dotfiles" \
+		remote set-url origin "$dotfiles_repo_ssh"
+}
+
+set_default_location_zsh_config()
+{
+	"$privilege_escalation" sh -c \
+		'printf "export ZDOTDIR=\"\$HOME\"/.config/zsh\n" > /etc/zsh/zshenv'
 }
 
 change_default_shell() {
@@ -175,15 +191,47 @@ change_default_shell() {
 	call chsh -s "$login_shell"
 }
 
-# info "Installing the user packages..."
 
-# info "Override the default Zsh configuration location to match ours"
-# sudo sh -c 'printf "export ZDOTDIR=\"\$HOME\"/.config/zsh\n" > /etc/zsh/zshenv'
+# =============================================================================
 
-platform_detection
 
-create_home_folder_structure
+step "Detecting platform"
+operating_system="$(uname -s)"
 
-printf "Hello there\n"
+if [ "$operating_system" = "Linux" ]
+then
+	# The 'related' notes below are here to help to distinguish the functionnal
+	# concepts of this scripts.
+	platform_folder='NONE'
+	package_manager='NONE'
+	which_linux							# related : os dectection
 
-# vim: fdm=marker foldmarker={,}
+	step "Changing directory to the project folder"
+	create_project_directory
+
+	# related : directory spec
+	step "Creating the expected home folder structure if not present"
+	create_home_folder_structure
+
+	step "Installing the packages"
+	# related : core / gui profiles
+	# direct adherences to dotfiles (wm)
+	# for GUI: which graphic server
+	install_packages
+
+	step "Importing the dotfiles configuration"
+	# related: other reposiory
+	install_dotfiles
+
+	step "Overriding the default Zsh config location"
+	set_default_location_zsh_config
+
+	step "Setting up the default shell"
+	change_default_shell
+
+	success "The script has finished the install. Enjoy."
+else
+	error "Unsupported platform"
+	exit 1
+fi
+exit 0

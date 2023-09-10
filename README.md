@@ -40,7 +40,7 @@ but more like things related to the use of the software, sometimes a remember.
 		<tr>
 			<td rowspan="7">Core</td>
 			<td>Development tools</td>
-			<td>-</td>
+			<td>Suckless suite</td>
 			<td>Compilers, make and so on.
 				Distro-dependant</td>
 		</tr>

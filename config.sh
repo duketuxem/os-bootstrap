@@ -1,7 +1,8 @@
 # No shebang needed since this script is sourced, not meant to be executed
 
-# ! this must exists _before_ running the distro script !
-ricing_project_directory="$HOME/develop/ricing"
+# The folder in which the custom desktop UI sources are going to be cloned.
+# In the default case, this will hold the custom dwm/dmenu/st repositories.
+ricing_project_directory="$HOME/develop/desktop"
 
 # for changing directory to the cloned folder name
 dotfiles_repo_name="dotfiles"

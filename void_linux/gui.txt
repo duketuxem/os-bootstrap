@@ -1,5 +1,8 @@
 # display
-xorg
+xorg-base
+
+# suckless tool suite dependencies
+libX11-devel libXft-devel libXinerama-devel
 
 # fonts
 nerd-fonts-otf noto-fonts-cjk

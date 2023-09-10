@@ -1,9 +1,7 @@
-# vim:ft=sh
-
 # system utils
 base-devel htop curl wget
 
-# network
+# network?
 
 # shell & shell utils
 zsh zsh-syntax-highlighting tmux
@@ -12,4 +10,6 @@ zsh zsh-syntax-highlighting tmux
 vim ctags
 
 # CLI power
-tree fd fzf bat feh #lf|nnn
+tree fzf fd bat neofetch
+
+# vim: syn=sh
