@@ -39,6 +39,8 @@ call()
     if [ $ret -ne 0 ]
     then
         error "$*\nreturned: $ret"
+		error "Being in: $(pwd)"
+		error "Listing: $(ls)"
         exit $ret
     fi
 }
