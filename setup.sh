@@ -126,13 +126,13 @@ create_home_folder_structure()
 	# concept a bit more, storing scripts and desktop related software logs to
 	# one specific place.
 	mkdir "$HOME/.config"			\
-			"$HOME/.local"			\
+			"$HOME/.local"		\
 			"$HOME/.local/cache"	\
 			"$HOME/.local/share"	\
 			"$HOME/.local/state"	\
-									\
-			"$HOME/.local/bin"		\
-			"$HOME/.local/log"		2> /dev/null
+						\
+			"$HOME/.local/bin"	\
+			"$HOME/.local/log"	2> /dev/null
 }
 
 # optimization: detect if any package is missing before running the
@@ -207,7 +207,7 @@ install_dotfiles()
 set_default_location_zsh_config()
 {
 	"$privilege_escalation" sh -c \
-		'printf "export ZDOTDIR=\"\$HOME\"/.config/zsh\n" > /etc/zsh/zshenv'
+		'printf "ZDOTDIR=\"\$HOME\"/.config/zsh\n" > /etc/zsh/zshenv'
 }
 
 change_default_shell() {
