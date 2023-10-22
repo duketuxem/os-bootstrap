@@ -103,40 +103,18 @@ but more like things related to the use of the software, sometimes a remember.
 </table>
 
 
-# Home folders structure
-The feeling of a familiar and comfy environment to work with
-comes from a pre-determined folder structure.
-Here is how I designed mine:
-```
-~
-├── .config/
-│   ├── vim/
-│   ├── zsh/
-│   └── ...and so on...
-├── .dotfiles/
-├── .local/
-│   ├── bin/
-│   ├── cache/
-│   ├── share/
-│   └── state/
-├── develop/
-│   └── ricing/
-│       ├── dotfiles/
-│       ├── os-bootstrap/
-│       └── suckless/
-│           ├── dmenu/
-│           ├── dwm/
-│           └── st/
-├── movies/
-├── music/
-└── pictures/
-    └── wallpaper.img
-```
-To add a note, a quite idealistic goal would be to have all the applications
-using configuration files at the home root folder 
+# Home folder structure
+
+In my opinion, to best feel like home one needs to establish a clearly
+predefined folder structure hierarchy and stick to it to always maintain those bytes tidy
+!
+
+The 'specification' I came with is available to check and adapt to your needs if
+you feel so. Anything in this folder will be used to create the folder tree on
+the targeted system.
 
 
-# How to use
+# How to use (to refactor)
 The user is logged on the system, and the machine has access to the internet.
 
 1. Update the system, and reboot eventually.

@@ -116,15 +116,17 @@ check_requirements()
 	# TODO: Are the package names only alphanum chars ?
 }
 
-create_home_folder_structure()
-{
-	# Those folders are expected by my dotfiles before they are deployed.
-	# I try to maintain a clean home as much as possible by using the
-	# environment variables relative to the XDG Base Directory specification.
+create_home_folder_structure() {
+	# NOW DEPRECATED: This is to change
+	# TODO: use a rsync kind of mechanism instead to establish the folder hierarchy
+	# Those folders are expected by my dotfiles before they are deployed.  I
+	# try to maintain a clean home as much as possible by using the
+	# environment variables relative to the XDG Base Directory
+	# specification.
 	#
-	# The 'bin/' and 'log/' directories are conceptually extending the previous
-	# concept a bit more, storing scripts and desktop related software logs to
-	# one specific place.
+	# The 'bin/' and 'log/' directories are conceptually extending the
+	# previous concept a bit more, storing scripts and desktop related
+	# software logs to one specific place.
 	mkdir "$HOME/.config"			\
 			"$HOME/.local"		\
 			"$HOME/.local/cache"	\
@@ -206,6 +208,7 @@ install_dotfiles()
 
 set_default_location_zsh_config()
 {
+	# TODO printf <<EOF and comment
 	"$privilege_escalation" sh -c \
 		'printf "ZDOTDIR=\"\$HOME\"/.config/zsh\n" > /etc/zsh/zshenv'
 }
