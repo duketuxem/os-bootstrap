@@ -225,10 +225,10 @@ check_requirements()
 		packages=$(awk '/^[a-zA-Z0-9]/ {printf "%s ", $0} END{print ""}' "$file")
 		# TODO: --dry-run is not implemented in every package managers
 		# so far as I checked : xbps / apt / not rpm...
-		"$package_manager" --dry-run "$packages" > /dev/null 2>&1
+		eval "$package_manager" --dry-run "$packages" > /dev/null 2>&1
 		if [ $? -ne 0 ]; then
-		       error "Some package seems incorrect from :"
-		       "$package_manager" --dry-run "$packages"
+		       error "The package install check failed:"
+		       eval "$package_manager" --dry-run "$packages" > /dev/null
 		fi
        	done
 
