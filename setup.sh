@@ -139,7 +139,7 @@ install_packages()
 	if ! ask "Proceed ?"; then
 		exit 1
 	fi
-	if eval "$install_command"; then
+	if ! eval "$install_command"; then
 		error "Something failed during the packages installation."
 		exit 1
 	fi
