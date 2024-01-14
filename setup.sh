@@ -10,8 +10,8 @@ error=0
 
 # Prevent git from asking to supply information in an interactive way.
 # This makes all the checks regarding remote repositories possible.
-GIT_ASKPASS="echo"
-SSH_ASKPASS="echo"
+export GIT_ASKPASS="echo"
+export SSH_ASKPASS="echo"
 
 ###
 # Utils
@@ -83,6 +83,8 @@ ask()
 ###
 which_linux()
 {
+	step "Detecting Linux Flavor"
+
 	if has lsb_release; then
 		distro=$(lsb_release -sd)
 	else
@@ -92,6 +94,7 @@ which_linux()
 	fi
 
 	if [ "$distro" = '"Void Linux"' ]; then
+		success "$distro detected"
 		platform_folder='void_linux'
 		package_manager='xbps-install -y'
 		privilege_escalation='sudo'
@@ -114,8 +117,9 @@ which_linux()
 	# 	&& package_manager="emerge "
 
 	printf "Package manager command should be '%s'\n" "$package_manager"
-	ask "Is that correct ?"
-	[ $? -eq 1 ] && exit 1
+	if ! ask "Is that correct ?"; then
+		exit 1
+	fi
 }
 
 create_home_folder_structure()
@@ -132,7 +136,7 @@ install_packages()
 	install_command="$privilege_escalation $package_manager $packages"
 	printf "Running: $install_command\n"
 
-	if ask "Proceed ?"; then
+	if ! ask "Proceed ?"; then
 		exit 1
 	fi
 	if eval "$install_command"; then
@@ -253,7 +257,6 @@ operating_system="$(uname -s)"
 
 if [ "$operating_system" = "Linux" ]
 then
-	# Distro related
 	platform_folder='NONE'
 	package_manager='NONE'
 	which_linux
