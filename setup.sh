@@ -196,7 +196,7 @@ check_requirements()
 {
 	step "Checking requirements"
 	#
-	if mkdir -p "$repositories_location" 2> /dev/null;
+	if ! mkdir -p "$repositories_location" 2> /dev/null;
 	then
 		error "The folder holding repos doesn't exist and can't be created"
 	fi
@@ -228,13 +228,13 @@ check_requirements()
 		"$package_manager" --dry-run "$packages" > /dev/null 2>&1
 		if [ $? -ne 0 ]; then
 		       error "Some package seems incorrect from :"
-		       "$package_manager" --dry-run "$packages" > dev/null
+		       "$package_manager" --dry-run "$packages"
 		fi
        	done
 
 	### Check if the dotfiles repository exists
 	# --exit-code allows the command to fail if the branch is incorrect
-	if git ls-remote --exit-code \
+	if ! git ls-remote --exit-code \
 		"$dotfiles_git_full_url" \
 	       	"$dotfiles_git_branch" > /dev/null 2>&1;
 	then
