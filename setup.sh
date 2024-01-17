@@ -3,9 +3,6 @@
 # This script aims to be POSIX compatible (no shell flavor).
 # As a reminder there are no arrays, all variables are global, ...
 
-# Load the configuration (variables) to be used here
-. ./config.sh
-
 error=0
 
 # Prevent git from asking to supply information in an interactive way.
@@ -13,69 +10,6 @@ error=0
 export GIT_ASKPASS="echo"
 export SSH_ASKPASS="echo"
 
-###
-# Utils
-###
-error()
-{
-    printf "\033[0;1;31m$*\033[0m\n"
-    error=1
-}
-
-success()
-{
-    printf "\033[0;1;32m$*\033[0m\n"
-}
-
-warning()
-{
-    printf "\033[0;1;33m$*\033[0m\n"
-}
-
-info()
-{
-    printf "\033[0;1;34m$*\033[0m\n"
-}
-
-step()
-{
-    printf "\033[0;1;35m$*\033[0m\n"
-}
-
-call()
-{
-    info "$*"
-
-    "$@"
-    ret=$?
-    if [ $ret -ne 0 ]
-    then
-        error "$*\nreturned: $ret"
-		error "Being in: $(pwd)"
-        exit $ret
-    fi
-}
-
-# The following is taken from: https://github.com/dylanaraps/pfetch
-# This is just a simple wrapper around 'command -v' to avoid
-# spamming '>/dev/null' throughout this function. This also guards
-# against aliases and functions.
-has()
-{
-    _cmd=$(command -v "$1") 2>/dev/null || return 1
-    [ -x "$_cmd" ] || return 1
-}
-
-ask()
-{
-	printf "%s [Y/n] " "$1"
-	read -r answer
-	if [ -z "$answer" ] || [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
-		return 0
-	else
-		return 1
-	fi
-}
 
 
 ###
@@ -97,6 +31,7 @@ which_linux()
 		success "$distro detected"
 		platform_folder='void_linux'
 		package_manager='xbps-install -y'
+		package_manager_check="$package_manager --dry-run"
 		privilege_escalation='sudo'
 	else
 		error "Unhandled flavor for the moment..."
@@ -132,6 +67,7 @@ create_home_folder_structure()
 # package manager command
 install_packages()
 {
+	step "Installing the 'Core' profile"
 	packages=$(grep -v '^#' "./$platform_folder/$main_profile_file" | tr -s '\n' ' ')
 	install_command="$privilege_escalation $package_manager $packages"
 	printf "Running: $install_command\n"
@@ -143,26 +79,6 @@ install_packages()
 		error "Something failed during the packages installation."
 		exit 1
 	fi
-
-	# =======================================================================
-
-	# TODO Make this not hardcoded...
-	# step "Installing the custom desktop suite (suckless)..."
-	# cd "$repositories_location"
-	# for soft in dmenu dwm st
-   	# do
-	# 	if has $soft; then
-	# 		info "$soft is already installed"
-	# 		continue
-	# 	fi
-	# 	call git clone https://github.com/duketuxem/"$soft".git -b my_fork \
-	# 		&& cd $soft \
-	# 		&& call "$privilege_escalation" make install \
-	# 		&& success "$soft successfully installed!\n" \
-	# 		&& git remote set-url origin git@github.com:duketuxem/$soft.git \
-	# 		&& success "Repository set to use SSH." \
-	# 		&& cd ..
-	# done
 }
 
 install_dotfiles()
@@ -199,21 +115,27 @@ change_default_shell() {
 check_requirements()
 {
 	step "Checking requirements"
-	#
-	if ! mkdir -p "$repositories_location" 2> /dev/null;
-	then
-		error "The folder holding repos doesn't exist and can't be created"
-	fi
-
 	# Required for creating the home folder structure
 	# devnote: let's not handle some cases where the script is run
 	# from outside the working directory. Make this a requirement, over.
 	if [ "$(pwd | awk -F '/' '{print $NF}')" != "os-bootstrap" ];
 	then
 		error "Please, cd to the os-bootstrap cloned repository"
+		exit 1
+	else
+		. ./utils.sh
+
+		# Load the configuration (variables) to be used here
+		. ./config.sh
 	fi
 
-	# Check if all the packages can be resolved
+	if ! mkdir -p "$repositories_location" 2> /dev/null;
+	then
+		error "The folder holding repos doesn't exist and can't be created"
+	fi
+
+
+	# Check if all the packages (from all profiles) can be resolved
 	for file in "$platform_folder"/*;
 	do
 		# TODO: test | alternative otherwise : "${string#*"$word"}"
@@ -227,12 +149,10 @@ check_requirements()
 		# text file and verify whether the package manager accepts
 		# all of them.
 		packages=$(awk '/^[a-zA-Z0-9]/ {printf "%s ", $0} END{print ""}' "$file")
-		# TODO: --dry-run is not implemented in every package managers
-		# so far as I checked : xbps / apt / not rpm...
-		eval "$package_manager" --dry-run "$packages" > /dev/null 2>&1
+		eval "$package_manager_check" "$packages" > /dev/null 2>&1
 		if [ $? -ne 0 ]; then
 		       error "The package install check failed:"
-		       eval "$package_manager" --dry-run "$packages" > /dev/null
+		       eval "$package_manager_check" "$packages" > /dev/null
 		fi
        	done
 
@@ -248,7 +168,6 @@ check_requirements()
 	[ $error -ne 0 ] && exit $error
 
 	success "All requirements satisfied"
-	sleep 1
 }
 
 
@@ -263,7 +182,6 @@ then
 
 	check_requirements
 
-	step "Installing the packages"
 	# related : core / gui profiles
 	# direct adherences to dotfiles (wm)
 	# for Desktop: which graphic server

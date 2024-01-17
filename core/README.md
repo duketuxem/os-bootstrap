@@ -1,3 +1,16 @@
+# The core profile
+
+This is the default profile that at least will be installed with os-bootstrap.
+This part of the repository highlights what exactly is a requirement use-case
+for your expected configuration and software to be installed on any machine you
+can use.
+
+It helps to visualize what direct adherences your dotfiles rely on.
+
+# In my case
+
+To fit my personnal needs, I intend to keep all my config under `~/.config` and
+some tweaks related to `.local`.
 # Core profile
 
 This is to ensure the expected folders exist before migrating all the
