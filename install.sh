@@ -67,7 +67,7 @@ install_profile()
 	fi
 	### Packages - install
 	install_command="$privilege_escalation $package_manager $packages"
-	printf "Running: $install_command\n"
+	printf 'Running: %s\n' "$install_command"
 	if ! ask "Proceed ?";
 	then
 		exit 1
@@ -89,11 +89,11 @@ install_profile()
 # Is the script not called from the root of the repository ?
 if [ "$(pwd | awk -F '/' '{print $NF}')" != "os-bootstrap" ];
 then
-	print "Please, run this script while being in the repo directory"
+	printf "Please, run this script while being in the repo directory"
 	exit 1
 # Otherwise load some helper functions
 elif ! . ./utils.sh; then
-	print "utils.sh file not found."
+	printf "utils.sh file not found."
 	exit 1
 fi
 
@@ -108,7 +108,7 @@ then
 	install_profile
 
 	success "The script has finished the install. Enjoy."
-
+fi
 return 0
 
 # vim: fdm=marker fmr={,}
