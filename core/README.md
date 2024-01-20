@@ -1,15 +1,17 @@
 # The core profile
 
-My most basic configuration, relying on nothing more than a tty.
-Just a set of pre-configured tools I expect to be present to keep my workflow
-consistent across devices.
+> My most basic configuration, relying on nothing more than a tty.
 
-This will install all the following listed software as well as the related
-configuration. Then the file structure present in `_home_folder_structure` will
-be created to welcome the associated dotfiles.
+This is the collection of tools that forms the backbone of my setup. Nothing
+here is expects a graphical server to run, because this should be able to be
+installed just anywhere — new laptop, Raspberry Pi, or even a remote virtual
+machine.
+
+For a desktop usage and in my case, this is the requirement on top of which the
+desktop profile later comes.
 
 
-## Software table
+## Software to be installed
 
 <table>
 	<thead>
@@ -78,8 +80,18 @@ the previous concept, providing a centralized location for respectively storing
 custom scripts and relevant software logs to access.
 
 
+## Script steps
 
-## Git bare repository (~/.dotfiles)
+### Create the file structure
+
+First, the file structure present in `_home_folder_structure` will be created to
+welcome the associated dotfiles.
+
+
+### Retrieve the dotfiles repository
+
+
+### Setting up the git bare repository (~/.dotfiles)
 
 After a successful setup, another folder will be created on top of these two.
 The Git bare repository `~/.dotfiles` will store all the details related to
@@ -88,47 +100,3 @@ for my favorite applications. This repository will enable me to push or pull
 updates while actively using the home folder.
 
 
-# Home folder structure
-
-In my opinion, to best feel like home one needs to establish a clearly
-predefined folder structure hierarchy, and stick to it to always maintain those
-bytes tidy !
-
-The 'specification' I came with is available to check and adapt to your needs if
-you feel so. Anything in this folder will be used to create the folder tree on
-the targeted system.
-
-
-#### draft, wip, todo
-- jq
-
-### Fonts
-- cyrillic
-
-
-		<tr>
-			<td>`xorg`</td>
-			<td>Graphic drivers ready</td>
-			<td>Graphic server. Does the job but why not to try wayland some day...</td>
-		</tr>
-		<tr>
-			<td rowspan="2">Fonts</td>
-			<td>Nerd fonts</td>
-			<td>Window manager and terminal</td>
-		</tr>
-		<tr>
-			<td>Noto fonts CJK</td>
-			<td>Asian languages</td>
-		</tr>
-		<tr>
-			<td>`dwm` + `dmenu`</td>
-			<td>`libX11 libXft libXinerama`, fonts</td>
-			<td>Tiling window manager and app launcher by suckless</td>
-		</tr>
-		<tr>
-			<td>`st`</td>
-			<td>`libX11 libXft`, fonts</td>
-			<td>Terminal emulator from by suckless</td>
-		</tr>
-	</tbody>
-</table>
