@@ -28,32 +28,32 @@ desktop profile later comes.
 			<td>Compilers, make and so on. Distro-dependant</td>
 		</tr>
 		<tr>
-			<td>`zsh`</td>
-			<td>`zsh-syntax-highlighting`</td>
+			<td><code>zsh</code></td>
+			<td><code>zsh-syntax-highlighting</code></td>
 			<td>Shell of choice with a minimal set of plugins</td>
 		</tr>
 		<tr>
-			<td>`tmux`</td>
+			<td><code>tmux</code></td>
 			<td>-</td>
 			<td>Useful to resume a session on a remote, remember considering an alternative ?(dvtm + abducco)</td>
 		</tr>
 		<tr>
-			<td>`vim`</td>
+			<td><code>vim</code></td>
 			<td>-</td>
 			<td>Honestly, just the best editor. That's all...</td>
 		</tr>
 		<tr>
-			<td>`fzf`</td>
-			<td>`fd`</td>
-			<td>Insanely fast fuzzy finding tool backed up by a `find` replacement</td>
+			<td><code>fzf</code></td>
+			<td><code>fd</code></td>
+			<td>Insanely fast fuzzy finding tool backed up by a <code>find</code> replacement</td>
 		</tr>
 		<tr>
-			<td>`htop`</td>
+			<td><code>htop</code></td>
 			<td>-</td>
 			<td>System monitor</td>
 		</tr>
 		<tr>
-			<td>`neofetch`</td>
+			<td><code>neofetch</code></td>
 			<td>-</td>
 			<td>System information concise overview</td>
 		</tr>
