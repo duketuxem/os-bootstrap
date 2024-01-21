@@ -40,6 +40,7 @@ check_git_repository()
 		error "The repository or branch is incorrect"
 		return 1
 	fi
+	success "The dotfiles repository can be retrieved"
 	return 0
 }
 
