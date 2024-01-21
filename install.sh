@@ -56,7 +56,7 @@ then
 # Must specify a profile
 elif [ ! "$1" ]
 then
-	error "install_profile function must take a profile as argument"
+	printf "Please, specify a profile as the first argument of the script\n"
 	exit 1
 # Otherwise load some helper functions
 elif ! . ./utils.sh
