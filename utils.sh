@@ -1,5 +1,5 @@
 # No shebang: This script is just sourced
-#
+
 # Prevent git from asking to supply information in an interactive way.
 # This makes the check regarding a remote repository possible.
 export GIT_ASKPASS="echo"
@@ -31,8 +31,6 @@ step()
 	printf "\033[0;1;35m$*\033[0m\n"
 }
 
-
-
 check_git_repository()
 {
 	### Repository / TODO archive, tar.gz ? ...
@@ -47,10 +45,25 @@ check_git_repository()
 
 create_file_tree()
 {
-	# test before ?... + Need to be optional
+	if [ ! "$1" ]
+	then
+		return 1
+	fi
+
 	# Create the folders (if any) from the profile template description
-	if ! find "$home_template/$1" -type d | xargs -I % mkdir %; then
+	if ! find "$1" -type d | xargs -I % mkdir %; then
 		error "Could not create the folders from the $1 profile"
+		return 1
+	fi
+}
+
+has_profile()
+{
+	# Should be using ./ to support all filenames, see SC2035
+	profiles=$(find * -maxdepth 0 -type d -not -path '*/.*')
+	if printf "$profiles" | grep -q "$1"
+	then
+		return 1
 	fi
 }
 
@@ -82,11 +95,57 @@ ask()
 {
 	printf "%s [Y/n] " "$1"
 	read -r answer
-	if [ -z "$answer" ] || [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
+	if [ -z "$answer" ] || [ "$answer" = "y" ] || [ "$answer" = "Y" ]
+	then
 		return 0
 	else
 		return 1
 	fi
 }
 
+
+### Platform detection
+which_linux()
+{
+	step "Detecting Linux Flavor"
+
+	if has lsb_release
+	then
+		distro=$(lsb_release -sd)
+	else
+		# try with if [ ! -f /etc/os-release ]; then
+		error "No lsb_release command available"
+		exit 1
+	fi
+
+	if [ "$distro" = '"Void Linux"' ]; then
+		success "$distro detected"
+		distro_file='void_linux.txt'
+		package_manager='xbps-install -y'
+		# package_manager_check="$package_manager --dry-run"
+		privilege_escalation='sudo'
+	# elif [ printf "$os_release" | grep -Eq 'debian|ubuntu' ]; then
+	# 	distro_file='debian.txt'
+	# 	package_manager='apt-get install -y'
+	# 	package_manager_check="$package_manager --dry-run"
+	# 	privilege_escalation='sudo'
+	else
+		error "Unhandled flavor for the moment..."
+		exit 1
+	fi
+
+	# printf "$os_release" | grep -q 'arch' \
+	# 	&& package_manager="pacman -S"
+
+	# printf "$os_release" | grep -q 'alpine' \
+	# 	&& package_manager="pkg add "
+
+	# printf "$os_release" | grep -q 'gentoo' \
+	# 	&& package_manager="emerge "
+
+	printf "Package manager command should be '%s'\n" "$package_manager"
+	if ! ask "Is that correct ?"; then
+		exit 1
+	fi
+}
 
