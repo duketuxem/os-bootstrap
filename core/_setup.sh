@@ -60,7 +60,7 @@ change_shell()
 		# Configure zsh to not look for dotfiles in $HOME anymore
 		"$privilege_escalation" sh -c \
 			'printf "ZDOTDIR=\"\$HOME\"/.config/zsh\n" > /etc/zsh/zshenv'
-		info "Changing the user's shell to $login_shell"
+		info "Changing the user's shell to $default_shell"
 		chsh -s "$default_shell"
 	fi
 }
