@@ -40,7 +40,7 @@ install_profile()
 		warn "No '_setup.sh' script found in directory $1"
 	else
 		cd "$1"
-		. _setup.sh
+		. ./_setup.sh
 		cd ..
 	fi
 }
