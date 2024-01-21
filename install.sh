@@ -3,6 +3,7 @@
 # This script aims to be POSIX compatible (no shell flavor).
 # As a reminder there are no arrays, all variables are global, ...
 
+set -x
 
 install_profile()
 {
@@ -34,7 +35,7 @@ install_profile()
 	if ! ask "Do you want to run the configuration for the $1 profile ?"
 	then
 		return 1
-	elif [ ! "./$1/_setup.sh" ];
+	elif [ ! -f "./$1/_setup.sh" ];
 	then
 		### Deploy config using instructions from the profile script
 		warn "No '_setup.sh' script found in directory $1"
@@ -49,7 +50,7 @@ install_profile()
 ### Preriquisites
 
 # Is the script not called from the root of the repository ?
-if [ "$(pwd | awk -F '/' '{print $NF}')" != "os-bootstrap" ];
+if [ "$(pwd | awk -F '/' '{print $NF}')" != "os-bootstrap" ]
 then
 	printf "Please, run this script while being in the repo directory\n"
 	exit 1

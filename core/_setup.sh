@@ -55,7 +55,7 @@ deploy_config()
 change_shell()
 {
 	# Check and change default shell
-	if [ "$(cat /etc/passwd | grep "$USER" | cut -d ':' -f 7)" != "$default_shell"]
+	if [ "$(cat /etc/passwd | grep "$USER" | cut -d ':' -f 7)" != "$default_shell" ]
 	then
 		# Configure zsh to not look for dotfiles in $HOME anymore
 		"$privilege_escalation" sh -c \
