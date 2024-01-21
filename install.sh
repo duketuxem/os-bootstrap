@@ -3,8 +3,6 @@
 # This script aims to be POSIX compatible (no shell flavor).
 # As a reminder there are no arrays, all variables are global, ...
 
-set -x
-
 install_profile()
 {
 	if has_profile "$1"

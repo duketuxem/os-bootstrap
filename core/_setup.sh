@@ -61,7 +61,7 @@ change_shell()
 		"$privilege_escalation" sh -c \
 			'printf "ZDOTDIR=\"\$HOME\"/.config/zsh\n" > /etc/zsh/zshenv'
 		info "Changing the user's shell to $login_shell"
-		chsh -s "$login_shell"
+		chsh -s "$default_shell"
 	fi
 }
 
