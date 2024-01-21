@@ -17,11 +17,6 @@ then
 fi
 
 
-change_default_shell() {
-	info "Setting login shell to $login_shell"
-	call chsh -s "$login_shell"
-}
-
 # Copier le contenu du repo dotfiles dans les $HOME/.dots
 # Changer le shell par defaut si pas fait
 # Faire la config root pour le respect des dotfiles
@@ -29,8 +24,14 @@ change_default_shell() {
 check_git_repository "$dotfiles_repo" "$dotfiles_repo_branch" || exit 1
 
 # Will create .config/ .local/{share/state/...}
-cd
-create_file_tree "./_home_folder_structure"
+prev_dir=$(pwd)
+# Create the folders (if any) from the profile template description
+cd # $HOME
+if ! find "$prev_dir/_home_folder_structure" -type d | xargs -I % mkdir %
+then
+	error "Could not create the folders from the $1 profile"
+	return 1
+fi
 cd -
 
 # Clone dotfiles repository next to os-bootstrap
@@ -56,7 +57,7 @@ git --git-dir="$HOME/.dotfiles" remote set-url origin "$dotfiles_repo_ssh"
 "$privilege_escalation" sh -c \
 	'printf "ZDOTDIR=\"\$HOME\"/.config/zsh\n" > /etc/zsh/zshenv'
 
-# Check default shell
+# Check and change default shell
 if [ $(cat /etc/passwd | grep "$USER" | cut -d ':' -f 7) != "$default_shell"]
 then
 	info "Changing the user's shell to $login_shell"

@@ -16,4 +16,7 @@ libreoffice
 # multimedia
 feh mpv mupdf
 
+# dark theme
+kvantum
+
 # vim: syn=sh
