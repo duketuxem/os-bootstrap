@@ -27,7 +27,8 @@ check_git_repository "$dotfiles_repo" "$dotfiles_repo_branch" || exit 1
 prev_dir=$(pwd)
 # Create the folders (if any) from the profile template description
 cd # $HOME
-if ! find "$prev_dir/_home_folder_structure" -type d | xargs -I % mkdir %
+if ! find "$prev_dir/_home_folder_structure" \
+	-type d -printf '%P\n' | xargs -I % mkdir %
 then
 	error "Could not create the folders from the $1 profile"
 	return 1
