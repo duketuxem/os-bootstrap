@@ -8,27 +8,27 @@ export SSH_ASKPASS="echo"
 ### Logging
 error()
 {
-	printf "\033[0;1;31m$*\033[0m\n"
+	printf '\033[0;1;31m%s\033[0m\n' "$*"
 }
 
 success()
 {
-	printf "\033[0;1;32m$*\033[0m\n"
+	printf '\033[0;1;32m%s\033[0m\n' "$*"
 }
 
 warning()
 {
-	printf "\033[0;1;33m$*\033[0m\n"
+	printf '\033[0;1;33m%s\033[0m\n' "$*"
 }
 
 info()
 {
-	printf "\033[0;1;34m$*\033[0m\n"
+	printf '\033[0;1;34m%s\033[0m\n' "$*"
 }
 
 step()
 {
-	printf "\033[0;1;35m$*\033[0m\n"
+	printf '\033[0;1;35m%s\033[0m\n' "$*"
 }
 
 check_git_repository()
@@ -58,15 +58,6 @@ create_file_tree()
 	fi
 }
 
-has_profile()
-{
-	# Should be using ./ to support all filenames, see SC2035
-	profiles=$(find * -maxdepth 0 -type d -not -path '*/.*')
-	if printf "$profiles" | grep -q "$1"
-	then
-		return 1
-	fi
-}
 
 # call()
 # {
@@ -106,10 +97,10 @@ ask()
 
 
 ### Platform detection
-which_linux()
-{
-	step "Detecting Linux Flavor"
 
+operating_system="$(uname -s)"
+if [ "$operating_system" = "Linux" ]
+then
 	if has lsb_release
 	then
 		distro=$(lsb_release -sd)
@@ -120,9 +111,9 @@ which_linux()
 	fi
 
 	if [ "$distro" = '"Void Linux"' ]; then
-		success "$distro detected"
+		info "$distro detected"
 		distro_file='void_linux.txt'
-		package_manager='xbps-install -y'
+		package_manager='xbps-install'
 		# package_manager_check="$package_manager --dry-run"
 		privilege_escalation='sudo'
 	# elif [ printf "$os_release" | grep -Eq 'debian|ubuntu' ]; then
@@ -131,7 +122,7 @@ which_linux()
 	# 	package_manager_check="$package_manager --dry-run"
 	# 	privilege_escalation='sudo'
 	else
-		error "Unhandled flavor for the moment..."
+		error "Unhandled/unknown flavor for the moment..."
 		exit 1
 	fi
 
@@ -144,9 +135,10 @@ which_linux()
 	# printf "$os_release" | grep -q 'gentoo' \
 	# 	&& package_manager="emerge "
 
-	printf "Package manager command should be '%s'\n" "$package_manager"
-	if ! ask "Is that correct ?"; then
-		exit 1
-	fi
-}
+	info "Package manager command should be '$package_manager'"
+else
+	error "Unsupported platform for now"
+	return 1
+fi
 
+return 0

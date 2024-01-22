@@ -3,80 +3,86 @@
 # This script aims to be POSIX compatible (no shell flavor).
 # As a reminder there are no arrays, all variables are global, ...
 
-install_profile()
+
+# Repository spec
+profile_script='_setup.sh'
+
+fatal()
 {
-	if has_profile "$1"
+	printf '\033[0;1;31m%s\033[0m\n' "$*"
+	exit 1
+}
+
+continue_install_or_not()
+{
+	if ask 'Do you want to continue the installation ?'
 	then
-		error "Directory '$1' not found in the repository"
-		exit 1
+		exit 0
 	fi
+}
 
-	### Packages - install
-	# Concatenate all lines representing packages from the current
-	# text file and verify whether the package manager accepts
-	# all of them.
-	packages=$(awk '/^[a-zA-Z0-9]/ {printf "%s ", $0} END{print ""}' \
-		"$1/$distro_file")
-	install_command="$privilege_escalation $package_manager $packages"
-	printf 'Running: %s\n' "$install_command"
-	if ! ask "Proceed ?";
-	then
-		exit 1
-	elif ! r=$(eval "$install_command" 2>&1 >/dev/null);
-	then
-		error "Something failed during the packages installations:\n$r"
-		exit 1
-	fi
-
-	success "The package(s) install/update was successful!"
-
-	if ! ask "Do you want to run the configuration for the $1 profile ?"
+no_profile()
+{
+	# Should be using ./ to support all filenames, see SC2035
+	profiles=$(find * -maxdepth 0 -type d -not -path '*/.*')
+	if printf '%s' "$profiles" | grep -q "$1"
 	then
 		return 1
-	elif [ ! -f "./$1/_setup.sh" ];
-	then
-		### Deploy config using instructions from the profile script
-		warn "No '_setup.sh' script found in directory $1"
-	else
-		cd "$1"
-		. ./_setup.sh
-		cd ..
 	fi
 }
 
 
-### Preriquisites
-
-# Is the script not called from the root of the repository ?
-if [ "$(pwd | awk -F '/' '{print $NF}')" != "os-bootstrap" ]
+###### Arguments and requirements
+if [ "$(pwd | awk -F '/' '{print $NF}')" != 'os-bootstrap' ]
 then
-	printf "Please, run this script while being in the repo directory\n"
-	exit 1
-# Must specify a profile
+	fatal 'Please, cd to the repository before running this script.'
 elif [ ! "$1" ]
 then
-	printf "Please, specify a profile as the first argument of the script\n"
-	exit 1
-# Otherwise load some helper functions
+	fatal 'Please, specify a profile as the first argument of this script.'
+# Sourcing utils which detects platform and sets required variables
 elif ! . ./utils.sh
 then
-	printf "utils.sh file not found.\n"
-	exit 1
-fi
-
-
-
-operating_system="$(uname -s)"
-if [ "$operating_system" = "Linux" ]
+	fatal 'utils.sh file not found or failed after loading.'
+elif no_profile "$1"
 then
-
-	which_linux
-
-	install_profile "$1"
-
-	success "The script has finished the install. Enjoy."
-
+	fatal "Specified profile '$1' was not found in this folder."
+elif [ ! -f "$1/$distro_file" ] || [ ! -s "$1/$distro_file" ]
+then
+	warn "No (or empty) package file found at: $1/$distro_file."
+	continue_install_or_not
 fi
-return 0
 
-# vim: fdm=marker fmr={,}
+if [ ! -f "./$1/$profile_script" ] || [ ! -s "./$1/$profile_script" ]
+then
+	warn "No (or empty) profile setup script found at: $1/$profile_script."
+	continue_install_or_not
+fi
+
+
+step "Package(s) install"
+packages=$(awk '/^[a-zA-Z0-9]/ {printf "%s ", $0} END {print ""}' \
+	"$1/$distro_file")
+install_command="$privilege_escalation $package_manager $packages"
+printf 'Running: %s\n' "$install_command"
+
+if ! r=$(eval "$install_command" 2>&1 >/dev/null)
+then
+	error "Something failed during the package(s) installation:\n$r"
+else
+	success "The package(s) install/update was successful!"
+fi
+
+
+step "Profile configuration"
+if ! ask "Do you want to run the configuration for the $1 profile ?"
+then
+	return 0
+fi
+
+cd "$1" || fatal "Can not cd to $1"
+
+. "./$profile_script" || return 1
+
+
+success 'The script has finished the install. Enjoy.'
+return 0
