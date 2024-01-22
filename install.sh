@@ -25,7 +25,7 @@ no_profile()
 {
 	# Should be using ./ to support all filenames, see SC2035
 	profiles=$(find * -maxdepth 0 -type d -not -path '*/.*')
-	if printf '%s' "$profiles" | grep -q "$1"
+	if printf '%s' "$profiles" | grep -wq "$1"
 	then
 		return 1
 	fi
@@ -63,14 +63,14 @@ step "Package(s) install"
 packages=$(awk '/^[a-zA-Z0-9]/ {printf "%s ", $0} END {print ""}' \
 	"$1/$distro_file")
 install_command="$privilege_escalation $package_manager $packages"
-printf 'Running: %s\n' "$install_command"
-
-if ! r=$(eval "$install_command" 2>&1 >/dev/null)
+if ! ask 'Running: %s\nContinue ?' "$install_command"
 then
-	error "Something failed during the package(s) installation:\n$r"
-else
-	success "The package(s) install/update was successful!"
+	exit 0
+elif ! eval "$install_command"
+then
+	fatal "Something failed during the package(s) installation:\n$r"
 fi
+success "The package(s) install/update was successful!"
 
 
 step "Profile configuration"
