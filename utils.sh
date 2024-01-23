@@ -35,7 +35,7 @@ check_git_repository()
 {
 	### Repository / TODO archive, tar.gz ? ...
 	# --exit-code allows the command to fail if the branch is incorrect
-	if ! git ls-remote --exit-code "$1" "$2" > /dev/null 2>&1;
+	if ! git ls-remote --exit-code "$1" "$2" > /dev/null 2>&1
 	then
 		error "The repository or branch is incorrect"
 		return 1
@@ -52,7 +52,8 @@ create_file_tree()
 	fi
 
 	# Create the folders (if any) from the profile template description
-	if ! find "$1" -type d | xargs -I % mkdir %; then
+	if ! find "$1" -type d | xargs -I % mkdir %
+       	then
 		error "Could not create the folders from the $1 profile"
 		return 1
 	fi
@@ -101,24 +102,27 @@ ask()
 operating_system="$(uname -s)"
 if [ "$operating_system" = "Linux" ]
 then
+	step "Detecting Linux Flavor"
+
 	if has lsb_release
 	then
 		distro=$(lsb_release -sd)
 	else
-		# try with if [ ! -f /etc/os-release ]; then
+		# try with if [ ! -f /etc/os-release ]
+	#then
 		error "No lsb_release command available"
 		exit 1
 	fi
 
-	if [ "$distro" = '"Void Linux"' ]; then
-		info "$distro detected"
-		# resetting sudo
-		sudo -k
+
+	if [ "$distro" = '"Void Linux"' ]
+       	then
 		distro_file='void_linux.txt'
 		package_manager='xbps-install'
 		# package_manager_check="$package_manager --dry-run"
 		privilege_escalation='sudo'
-	# elif [ printf "$os_release" | grep -Eq 'debian|ubuntu' ]; then
+	# elif [ printf "$os_release" | grep -Eq 'debian|ubuntu' ]
+	#then
 	# 	distro_file='debian.txt'
 	# 	package_manager='apt-get install -y'
 	# 	package_manager_check="$package_manager --dry-run"
@@ -136,6 +140,12 @@ then
 
 	# printf "$os_release" | grep -q 'gentoo' \
 	# 	&& package_manager="emerge "
+
+	# Resetting sudo access for forcing password
+	if [ "$privilege_escalation" = 'sudo' ]
+	then
+		sudo -k
+	fi
 
 	info "Package manager command should be '$package_manager'"
 else

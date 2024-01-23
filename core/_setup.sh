@@ -58,6 +58,7 @@ change_shell()
 	if [ "$(cat /etc/passwd | grep "$USER" | cut -d ':' -f 7)" != "$default_shell" ]
 	then
 		# Configure zsh to not look for dotfiles in $HOME anymore
+		info "Configuring zsh to look for dotfiles in $HOME/.config/zsh"
 		"$privilege_escalation" sh -c \
 			'printf "ZDOTDIR=\"\$HOME\"/.config/zsh\n" > /etc/zsh/zshenv'
 		info "Changing the user's shell to $default_shell"
@@ -68,9 +69,7 @@ change_shell()
 # Arguments
 if [ -z "${privilege_escalation+test_if_set}" ]
 then
-	. ../utils.sh
-	# TODO: OS detection when the script is not run from install.sh ...
-	which_linux
+	. ../utils.sh || exit 1
 fi
 
 # Main
