@@ -17,7 +17,7 @@ fatal()
 
 continue_install_or_not()
 {
-	if ! ask 'Do you want to continue the installation ?'
+	if ! ask 'This part will be skipped. Continue the installation ?'
 	then
 		exit 0
 	fi
