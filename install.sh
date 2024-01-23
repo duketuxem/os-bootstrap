@@ -6,6 +6,8 @@
 
 # Repository spec
 profile_script='_setup.sh'
+skip_packages=0
+skip_config=0
 
 fatal()
 {
@@ -15,7 +17,7 @@ fatal()
 
 continue_install_or_not()
 {
-	if ask 'Do you want to continue the installation ?'
+	if ! ask 'Do you want to continue the installation ?'
 	then
 		exit 0
 	fi
@@ -48,40 +50,47 @@ then
 	fatal 'utils.sh file not found or failed after loading.'
 elif [ ! -f "$1/$distro_file" ] || [ ! -s "$1/$distro_file" ]
 then
-	warn "No (or empty) package file found at: $1/$distro_file."
+	warning "No (or empty) package file found at: $1/$distro_file."
 	continue_install_or_not
+	$skip_packages=1
 fi
 
 if [ ! -f "./$1/$profile_script" ] || [ ! -s "./$1/$profile_script" ]
 then
-	warn "No (or empty) profile setup script found at: $1/$profile_script."
+	warning "No (or empty) profile setup script found at: $1/$profile_script."
 	continue_install_or_not
+	$skip_config=1
 fi
 
 
-step "Package(s) install"
-packages=$(awk '/^[a-zA-Z0-9]/ {printf "%s ", $0} END {print ""}' \
-	"$1/$distro_file")
-install_command="$privilege_escalation $package_manager $packages"
-printf '%s\n' "$install_command"
-
-if ! eval "$install_command"
+if [ "$skip_packages" -eq 0 ]
 then
-	fatal "Something failed during the package(s) installation:\n$r"
+	step "Package(s) install"
+	packages=$(awk '/^[a-zA-Z0-9]/ {printf "%s ", $0} END {print ""}' \
+		"$1/$distro_file")
+	install_command="$privilege_escalation $package_manager $packages"
+	printf '%s\n' "$install_command"
+
+	if ! eval "$install_command"
+	then
+		fatal "Something failed during the package(s) installation:\n$r"
+	fi
+	success "The package(s) install/update was successful!"
 fi
-success "The package(s) install/update was successful!"
 
 
-step "Profile configuration"
-if ! ask "Do you want to run the configuration for the $1 profile ?"
+if [ "$skip_config" -eq 0 ]
 then
-	return 0
+	step "Profile configuration"
+	if ! ask "Do you want to run the configuration for the $1 profile ?"
+	then
+		return 0
+	fi
+
+	cd "$1" || fatal "Can not cd to $1"
+
+	. "./$profile_script" || return 1
 fi
-
-cd "$1" || fatal "Can not cd to $1"
-
-. "./$profile_script" || return 1
-
 
 success 'The script has finished the install. Enjoy.'
 return 0
