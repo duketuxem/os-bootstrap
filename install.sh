@@ -63,10 +63,9 @@ step "Package(s) install"
 packages=$(awk '/^[a-zA-Z0-9]/ {printf "%s ", $0} END {print ""}' \
 	"$1/$distro_file")
 install_command="$privilege_escalation $package_manager $packages"
-if ! ask 'Running: %s\nContinue ?' "$install_command"
-then
-	exit 0
-elif ! eval "$install_command"
+printf '%s' "$install_command"
+
+if ! eval "$install_command"
 then
 	fatal "Something failed during the package(s) installation:\n$r"
 fi
