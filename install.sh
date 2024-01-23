@@ -39,13 +39,13 @@ then
 elif [ ! "$1" ]
 then
 	fatal 'Please, specify a profile as the first argument of this script.'
+elif no_profile "$1"
+then
+	fatal "Specified profile '$1' was not found in this folder."
 # Sourcing utils which detects platform and sets required variables
 elif ! . ./utils.sh
 then
 	fatal 'utils.sh file not found or failed after loading.'
-elif no_profile "$1"
-then
-	fatal "Specified profile '$1' was not found in this folder."
 elif [ ! -f "$1/$distro_file" ] || [ ! -s "$1/$distro_file" ]
 then
 	warn "No (or empty) package file found at: $1/$distro_file."
@@ -63,7 +63,7 @@ step "Package(s) install"
 packages=$(awk '/^[a-zA-Z0-9]/ {printf "%s ", $0} END {print ""}' \
 	"$1/$distro_file")
 install_command="$privilege_escalation $package_manager $packages"
-printf '%s' "$install_command"
+printf '%s\n' "$install_command"
 
 if ! eval "$install_command"
 then
