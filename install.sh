@@ -52,14 +52,14 @@ elif [ ! -f "$1/$distro_file" ] || [ ! -s "$1/$distro_file" ]
 then
 	warning "No (or empty) package file found at: $1/$distro_file."
 	continue_install_or_not
-	$skip_packages=1
+	$skip_packages = 1
 fi
 
 if [ ! -f "./$1/$profile_script" ] || [ ! -s "./$1/$profile_script" ]
 then
 	warning "No (or empty) profile setup script found at: $1/$profile_script."
 	continue_install_or_not
-	$skip_config=1
+	$skip_config = 1
 fi
 
 
