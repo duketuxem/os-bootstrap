@@ -22,13 +22,14 @@ argument. A profile is simply any directory left at the root of that repository
 and describe how that latter should be deployed on a target system.
 
 When `install.sh` is run with a given profile, it will first identify the
-system it is running on. Next, it will look for a plain text file corresponding
-to the detected system. That file should hold all the software dependencies
-related to the configuration to be deployed, as expected by the package
-manager.
+system it is running on. Next, it will look for a plain text file in the
+profile directory, corresponding to the detected system. That file should hold
+all the software dependencies related to the configuration to be deployed, as
+expected by the package manager.
 
 Finally, the configuration deployment process is handled over the profile main
-script, which has to describe all the steps to deploy what it is embedding.
+script, `_setup.sh`, which has to describe all the steps to deploy what it is
+embedding.
 
 
 ## How to use
@@ -56,19 +57,21 @@ benefits:
    a profile to list all software dependencies. This provides a clear view of
    what the profile expects to find already installed on a target, which can be
    any platform.
-2. **Independence of Processes:** Each process can be replayed independently.
+2. Standalone Configuration Deployment: The configuration deployment process
+   operates as a standalone and self-contained routine. This separation allows
+   the installation phase to focus on interacting with the package manager,
+   while the configuration remains 'self-centered.'
+3. **Independence of Processes:** Each process can be (re)played independently.
    However, the installation may suggest executing the corresponding profile
    subscript.
-3. **Standalone Configuration Deployment:** The configuration deployment
-   process is a standalone and contained routine. This allows the script to be
-   replayed at any time, helping to keep the configuration up to date, even as
-   it evolves over time.
 
 ### Scripting
 
-The install script is written in pure shell (no bash/zsh... flavor) to maximize
-portability. The goal would be to even support Windows, as long as there is a
-package manager available and other requirements met. So far, supporting a wide
-range of linux distributions is nice. As a minor drawback, one needs to look
-for every package name in each distribution for any software adding, but once a
-configuration is established it should not be something done everytime...
+The `install.sh` script is written in pure shell to maximize portability,
+avoiding dependencies on specific shell flavors like bash or zsh. Eventually,
+it would be to extend support to Windows, provided a package manager is
+available and other requirements are met. Currently, this is a possibility, and
+for now, supporting a wide range of Linux distributions is beneficial. A minor
+drawback is the need to search for package names in each distribution when
+adding new software, but once a configuration is established, it should not
+require constant attention.
