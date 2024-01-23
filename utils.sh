@@ -85,7 +85,7 @@ has()
 
 ask()
 {
-	printf "%s [Y/n] " "$1"
+	printf "%s [Y/n]" "$1"
 	read -r answer
 	if [ -z "$answer" ] || [ "$answer" = "y" ] || [ "$answer" = "Y" ]
 	then
@@ -112,6 +112,8 @@ then
 
 	if [ "$distro" = '"Void Linux"' ]; then
 		info "$distro detected"
+		# resetting sudo
+		sudo -k
 		distro_file='void_linux.txt'
 		package_manager='xbps-install'
 		# package_manager_check="$package_manager --dry-run"
