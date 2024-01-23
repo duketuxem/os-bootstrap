@@ -81,12 +81,12 @@ fi
 
 if [ "$skip_config" -eq 0 ]
 then
-	step "Profile configuration"
 	if ! ask "Do you want to run the configuration for the $1 profile ?"
 	then
 		return 0
 	fi
 
+	step "Profile configuration"
 	cd "$1" || fatal "Can not cd to $1"
 
 	. "./$profile_script" || return 1

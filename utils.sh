@@ -85,7 +85,7 @@ has()
 
 ask()
 {
-	printf "%s [Y/n]" "$1"
+	printf "%s [Y/n] " "$1"
 	read -r answer
 	if [ -z "$answer" ] || [ "$answer" = "y" ] || [ "$answer" = "Y" ]
 	then
