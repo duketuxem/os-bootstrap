@@ -4,7 +4,7 @@
 # As a reminder there are no arrays, all variables are global, ...
 
 
-# Repository spec
+# Repository/file spec
 profile_script='_setup.sh'
 skip_packages=0
 skip_config=0
@@ -34,7 +34,7 @@ no_profile()
 }
 
 
-###### Arguments and requirements
+### Argument checking and requirements
 if [ "$(pwd | awk -F '/' '{print $NF}')" != 'os-bootstrap' ]
 then
 	fatal 'Please, cd to the repository before running this script.'
@@ -63,7 +63,8 @@ then
 fi
 
 
-if [ "$skip_packages" -eq 0 ]
+### Installation process
+if [ "$skip_packages" -ne 1 ]
 then
 	step "Package(s) install"
 	packages=$(awk '/^[a-zA-Z0-9]/ {printf "%s ", $0} END {print ""}' \
@@ -79,14 +80,14 @@ then
 fi
 
 
-if [ "$skip_config" -eq 0 ]
+if [ "$skip_config" -ne 1 ]
 then
 	if ! ask "Do you want to run the configuration for the $1 profile ?"
 	then
 		return 0
 	fi
-
 	step "Profile configuration"
+
 	cd "$1" || fatal "Can not cd to $1"
 
 	. "./$profile_script" || return 1
