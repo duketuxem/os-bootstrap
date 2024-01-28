@@ -98,6 +98,7 @@ then
 			exit 1
 		fi
 	elif ! has lsb_release
+	then
 		error 'No lsb_release command available.'
 		error 'Can not rely on any reliable method to detect flavor.'
 		exit 1

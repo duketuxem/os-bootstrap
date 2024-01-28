@@ -5,7 +5,7 @@ htop curl wget
 zsh zsh-syntax-highlighting tmux
 
 # editor
-vim ctags
+vim universal-ctags
 
 # CLI
 tree fzf fd-find bat neofetch
