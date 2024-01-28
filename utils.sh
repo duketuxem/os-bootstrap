@@ -1,9 +1,10 @@
-# No shebang: This script is just sourced
+# No shebang: This script is sourced from another script
 
-# Prevent git from asking to supply information in an interactive way.
-# This makes the check regarding a remote repository possible.
-export GIT_ASKPASS="echo"
-export SSH_ASKPASS="echo"
+# Disabling git interactive prompts allows for testing a repository existence
+# Must be set this way to close 'stdin'
+GIT_ASKPASS="echo"
+SSH_ASKPASS="echo"
+
 
 ### Logging
 error()
@@ -31,6 +32,29 @@ step()
 	printf '\033[0;1;35m%s\033[0m\n' "$*"
 }
 
+### Generic actions to be used in other scripts
+ask()
+{
+	printf "%s [Y/n] " "$1"
+	read -r answer
+	if [ -z "$answer" ] || [ "$answer" = "y" ] || [ "$answer" = "Y" ]
+	then
+		return 0
+	else
+		return 1
+	fi
+}
+
+# The following is taken from: https://github.com/dylanaraps/pfetch
+# This is just a simple wrapper around 'command -v' to avoid
+# spamming '>/dev/null' throughout this function. This also guards
+# against aliases and functions.
+has()
+{
+	_cmd=$(command -v "$1") 2>/dev/null || return 1
+	[ -x "$_cmd" ] || return 1
+}
+
 check_git_repository()
 {
 	### Repository / TODO archive, tar.gz ? ...
@@ -44,113 +68,56 @@ check_git_repository()
 	return 0
 }
 
-create_file_tree()
-{
-	if [ ! "$1" ]
-	then
-		return 1
-	fi
-
-	# Create the folders (if any) from the profile template description
-	if ! find "$1" -type d | xargs -I % mkdir %
-       	then
-		error "Could not create the folders from the $1 profile"
-		return 1
-	fi
-}
-
-
-# call()
-# {
-# 	info "$*"
-
-# 	"$@"
-# 	ret=$?
-# 	if [ $ret -ne 0 ]
-# 	then
-# 		error "$*\nreturned: $ret"
-# 		error "Being in: $(pwd)"
-# 		exit $ret
-# 	fi
-# }
-
-# The following is taken from: https://github.com/dylanaraps/pfetch
-# This is just a simple wrapper around 'command -v' to avoid
-# spamming '>/dev/null' throughout this function. This also guards
-# against aliases and functions.
-has()
-{
-	_cmd=$(command -v "$1") 2>/dev/null || return 1
-	[ -x "$_cmd" ] || return 1
-}
-
-ask()
-{
-	printf "%s [Y/n] " "$1"
-	read -r answer
-	if [ -z "$answer" ] || [ "$answer" = "y" ] || [ "$answer" = "Y" ]
-	then
-		return 0
-	else
-		return 1
-	fi
-}
 
 
 ### Platform detection
 
 operating_system="$(uname -s)"
-if [ "$operating_system" = "Linux" ]
+if [ "$operating_system" = 'Linux' ]
 then
-	step "Detecting Linux Flavor"
+	step 'Detecting Linux Flavor'
 
-	if has lsb_release
+	if [ -f '/etc/os-release' ]
 	then
-		distro=$(lsb_release -sd)
-	else
-		# try with if [ ! -f /etc/os-release ]
-	#then
-		error "No lsb_release command available"
+		# TODO: is 'ID' present everywhere
+		distro=$(grep '^ID' /etc/os-release)
+		eval "$distro"
+
+		if [ "$ID" = 'debian' ]
+		then
+			distro_file='debian.txt'
+			package_manager='apt-get install'
+			privilege_escalation='sudo'
+		elif [ "$ID" = 'void' ]
+		then
+			distro_file='void.txt'
+			package_manager='xbps-install'
+			privilege_escalation='sudo'
+		else
+			error 'Can not detect linux distribution, aborting.'
+			exit 1
+		fi
+	elif ! has lsb_release
+		error 'No lsb_release command available.'
+		error 'Can not rely on any reliable method to detect flavor.'
 		exit 1
+	# TODO: implement the fallback with lsb_release ?
 	fi
-
-
-	if [ "$distro" = '"Void Linux"' ]
-       	then
-		distro_file='void_linux.txt'
-		package_manager='xbps-install'
-		# package_manager_check="$package_manager --dry-run"
-		privilege_escalation='sudo'
-	# elif [ printf "$os_release" | grep -Eq 'debian|ubuntu' ]
-	#then
-	# 	distro_file='debian.txt'
-	# 	package_manager='apt-get install -y'
-	# 	package_manager_check="$package_manager --dry-run"
-	# 	privilege_escalation='sudo'
-	else
-		error "Unhandled/unknown flavor for the moment..."
-		exit 1
-	fi
-
-	# printf "$os_release" | grep -q 'arch' \
-	# 	&& package_manager="pacman -S"
-
-	# printf "$os_release" | grep -q 'alpine' \
-	# 	&& package_manager="pkg add "
-
-	# printf "$os_release" | grep -q 'gentoo' \
-	# 	&& package_manager="emerge "
-
-	# Resetting sudo access for forcing password
-	if [ "$privilege_escalation" = 'sudo' ]
-	then
-		sudo -k
-	fi
-
 	info "Package manager command should be '$package_manager'"
+
+elif [ "$operating_system" = "FreeBSD" ]
+then
+	error "(Free)BSD Unimplemented"
+	return 1
 else
 	error "Unsupported platform for now"
 	return 1
+fi
+
+# Reset sudo 'cache' access for forcing password prompt
+if [ "$privilege_escalation" = 'sudo' ]
+then
+	sudo -k
 fi
 
 return 0

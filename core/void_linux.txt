@@ -1,9 +1,8 @@
 # system utils
-base-devel htop curl wget
+# TODO: reconsider base-devel in this profile
+htop curl wget
 
-# network?
-
-# shell & shell utils
+# shell
 zsh zsh-syntax-highlighting tmux
 
 # editor
